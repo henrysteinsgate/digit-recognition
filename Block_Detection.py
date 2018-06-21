@@ -1,11 +1,7 @@
 import imutils
 import cv2
 import numpy as np
-
-
-
-
-
+import argparse as ap
 
 # Get the path of the training set
 parser = ap.ArgumentParser()
@@ -13,7 +9,7 @@ parser.add_argument("-i", "--image", help="Path to Image", required="True")
 args = vars(parser.parse_args())
 
 #load the image, convert it to grayscale, blur it slightly, and threshold it
-image = cv2.imread('block-world-2.jpg')
+image = cv2.imread(args["image"])
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 img = cv2.medianBlur(gray, 7)
 blurred = cv2.GaussianBlur(img, (5, 5), 0)

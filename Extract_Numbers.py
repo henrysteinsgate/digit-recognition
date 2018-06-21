@@ -10,14 +10,10 @@ import time
 
 # Get the path of the training set
 parser = ap.ArgumentParser()
-parser.add_argument("-c", "--classiferPath", help="Path to Classifier File", required="True")
 parser.add_argument("-i", "--image", help="Path to Image", required="True")
 args = vars(parser.parse_args())
 
-# Load the classifier
-clf, pp = joblib.load(args["classiferPath"])
-
-# Read the input image 
+# Read the input image
 im = cv2.imread(args["image"])
 
 # Convert to grayscale and apply Gaussian filtering
@@ -58,27 +54,14 @@ kernel = np.ones((3,3),np.uint8)
 erode = cv2.erode(colored,kernel,iterations = 2)
 
 
-
-# # Test Erosion
-# erode_1 = erode
-# erode_2 = cv2.erode(colored,kernel,iterations = 2)
-
-# cv2.imshow("erode with 1 iterations", erode_1)
-# cv2.waitKey()
-# cv2.imshow("erode with 2 iterations", erode_2)
-# cv2.waitKey()
-
 im_w, im_h, im_c = im.shape
-print "width", im_w, "height", im_h
 
 center_x = im_h/2
 center_y = im_w/2
 # cv2.circle(colored,(center_x, center_y), 2, (0,0,255), -1)
 
 cv2.imshow("Denoised", erode)
-cv2.imshow("Original", colored)
 cv2.waitKey()
-
 
 # Get rectangles contains each contour
 rects = [cv2.boundingRect(ctr) for ctr in ctrs] 
@@ -104,14 +87,13 @@ for rect in rects:
 		rects_split.append(rect)
 
 
-# For each rectangular region, calculate HOG features and predict
-# the digit using Linear SVM.
-
 crop_pixel = 15
+i = 0
 
 for rect in rects_split:
     # Draw the rectangles
     cv2.rectangle(im, (rect[0] + crop_pixel, rect[1] + crop_pixel), (rect[0] + rect[2] - crop_pixel, rect[1] + rect[3] - crop_pixel), (0, 255, 0), 3) 
+    cv2.imshow("Displaying cropped image",im)
     # Make the rectangular region around the digit
     # leng = int(rect[3] * 1.6 - crop_pixel)
     # pt1 = int(rect[1] + rect[3] // 2 - leng // 2)
@@ -120,43 +102,15 @@ for rect in rects_split:
     pt2 = int(rect[1] + rect[3] - crop_pixel)
     pt3 = int(rect[0] + crop_pixel)
     pt4 = int(rect[0] + rect[2] - crop_pixel)
-    roi = im_th[pt1:pt2, pt3:pt4]
-    # Resize the image
-    roi = cv2.resize(roi, (28, 28), interpolation=cv2.INTER_AREA)
-    roi = cv2.dilate(roi, (3, 3))
-    # Calculate the HOG features
-    roi_hog_fd = hog(roi, orientations=9, pixels_per_cell=(14, 14), cells_per_block=(1, 1), visualise=False)
-    roi_hog_fd = pp.transform(np.array([roi_hog_fd], 'float64'))
-    nbr = clf.predict(roi_hog_fd)
-    cv2.putText(im, str(int(nbr[0])), (rect[0], rect[1]),cv2.FONT_HERSHEY_DUPLEX, 2, (0, 255, 255), 3)
-    
-cv2.imshow("Blah", im)
-cv2.waitKey()
+    roi = erode[pt1:pt2, pt3:pt4]
 
-cv2.namedWindow("Resulting Image with Rectangular ROIs", cv2.WINDOW_NORMAL)
-cv2.imshow("Resulting Image with Rectangular ROIs", im)
-cv2.waitKey()
+    path = "/home/hud/Summer_ws/digit-recognition/Templates/template-" + str(i) + ".jpg"
+    msg = "Saving Image " + str(i)
+    print(str(msg))
+    cv2.imwrite(str(path), roi)
+    cv2.waitKey()
+    i = i + 1
+
+# cv2.waitKey()
 cv2.destroyAllWindows()
-
-#Henry's Method
-# def centerCorrection(x, y, w, h, correctAmount):
-# 	z = 25 / 35 * 10
-# 	t = w - z
-# 	xp = x + t
-# 	wp = z
-# 	zp = 25 / 35 * correctAmount
-# 	tp = wp - zp
-# 	xpp = xp + tp / 2
-# 	wpp = zp
-
-# 	z = 25 / 35 * 10
-# 	t = h - z
-# 	yp = y + t
-# 	hp = z
-# 	zp = 25 / 35 * correctAmount
-# 	tp = hp - zp
-# 	ypp = yp + tp / 2
-# 	hpp = zp
-# 	return xpp, ypp, wpp, hpp
-
 
