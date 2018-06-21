@@ -13,19 +13,23 @@ blockWidth = 89
 
 #Croping the center part of the number off
 def centerCorrection(x, y, w, h):
-	offset = w - blockWidth
+	multiplierx = abs(x - center_x) // center_x
+	multipliery = abs(y - center_y) // center_y
+
+	offset = w - blockWidth * (1 + multiplierx)
 	if(x > center_x):
 		x = x + offset
 		w = blockWidth
 	else:
 		w = w - offset
 
-	offset = h - blockWidth
+	offset = h - blockWidth * (1 + multipliery)
 	if(y > center_y):
 		y = y + offset
 		h = blockWidth
 	else:
 		h = h - offset
+	return x, y, w, h
 
 # Get the path of the training set
 parser = ap.ArgumentParser()
@@ -132,12 +136,11 @@ crop_pixel = 15
 for rect in rects_split:
     # Draw the rectangles
     (x,y,w,h) = centerCorrection(rect[0],rect[1],rect[2], rect[3])
-    rect = []
-    rect.append(x)
-    rect.append(y)
-    rect.append(w)
-    rect.append(h)
-
+    # rect = []
+    # rect.append(x)
+    # rect.append(y)
+    # rect.append(w)
+    # rect.append(h)
 
     cv2.rectangle(im, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 3)
     # Make the rectangular region around the digit
