@@ -38,12 +38,12 @@ _, ctrs, hier = cv2.findContours(im_th.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPR
 colored = cv2.cvtColor(im_th, cv2.COLOR_GRAY2RGB)
 
 for ctr in ctrs:
-	x,y,w,h = cv2.boundingRect(ctr)
-	if(w >= 5 and h >= 40):
-		# cv2.rectangle(colored,(x,y),(x+w,y+h),(0,255,0),2)
-		time.sleep(0.01)
-	else:
-		cv2.drawContours(colored,[ctr],0,(0,0,0),-1)
+    x,y,w,h = cv2.boundingRect(ctr)
+    if(w >= 5 and h >= 40):
+        # cv2.rectangle(colored,(x,y),(x+w,y+h),(0,255,0),2)
+        time.sleep(0.01)
+    else:
+        cv2.drawContours(colored,[ctr],0,(0,0,0),-1)
 
 colored = cv2.cvtColor(colored, cv2.COLOR_BGR2GRAY)
 
@@ -83,27 +83,27 @@ cv2.waitKey()
 
 
 # Get rectangles contains each contour
-rects = [cv2.boundingRect(ctr) for ctr in ctrs] 
+rects = [cv2.boundingRect(ctr) for ctr in ctrs]
 
 # Segment all the connected blocks
 rects_split = []
 for rect in rects:
-	# If width is much greater that height, then 2 horizontal blocks in a row
-	if rect[2] >= int(1.5 * rect[3]): 
-		new_rect_1 = (rect[0], rect[1], rect[2] // 2, rect[3])
-		new_rect_2 = (rect[0] + rect[2] // 2, rect[1], rect[2] // 2, rect[3])
+    # If width is much greater that height, then 2 horizontal blocks in a row
+    if rect[2] >= int(1.5 * rect[3]):
+        new_rect_1 = (rect[0], rect[1], rect[2] // 2, rect[3])
+        new_rect_2 = (rect[0] + rect[2] // 2, rect[1], rect[2] // 2, rect[3])
 
-		rects_split.append(new_rect_1)
-		rects_split.append(new_rect_2)
-	# if height is much greater than width, then 2 vertical blocks in a row
-	elif rect[3] >= int(1.5 * rect[2]):
-		new_rect_1 = (rect[0], rect[1], rect[2], rect[3] // 2)
-		new_rect_2 = (rect[0], rect[1] + rect[3] // 2, rect[2], rect[3] // 2)
+        rects_split.append(new_rect_1)
+        rects_split.append(new_rect_2)
+    # if height is much greater than width, then 2 vertical blocks in a row
+    elif rect[3] >= int(1.5 * rect[2]):
+        new_rect_1 = (rect[0], rect[1], rect[2], rect[3] // 2)
+        new_rect_2 = (rect[0], rect[1] + rect[3] // 2, rect[2], rect[3] // 2)
 
-		rects_split.append(new_rect_1)
-		rects_split.append(new_rect_2)
-	else:
-		rects_split.append(rect)
+        rects_split.append(new_rect_1)
+        rects_split.append(new_rect_2)
+    else:
+        rects_split.append(rect)
 
 
 # For each rectangular region, calculate HOG features and predict
@@ -113,7 +113,7 @@ crop_pixel = 15
 
 for rect in rects_split:
     # Draw the rectangles
-    cv2.rectangle(im, (rect[0] + crop_pixel, rect[1] + crop_pixel), (rect[0] + rect[2] - crop_pixel, rect[1] + rect[3] - crop_pixel), (0, 255, 0), 3) 
+    cv2.rectangle(im, (rect[0] + crop_pixel, rect[1] + crop_pixel), (rect[0] + rect[2] - crop_pixel, rect[1] + rect[3] - crop_pixel), (0, 255, 0), 3)
     # Make the rectangular region around the digit
     # leng = int(rect[3] * 1.6 - crop_pixel)
     # pt1 = int(rect[1] + rect[3] // 2 - leng // 2)
@@ -131,7 +131,7 @@ for rect in rects_split:
     roi_hog_fd = pp.transform(np.array([roi_hog_fd], 'float64'))
     nbr = clf.predict(roi_hog_fd)
     cv2.putText(im, str(int(nbr[0])), (rect[0], rect[1]),cv2.FONT_HERSHEY_DUPLEX, 2, (0, 255, 255), 3)
-    
+
 cv2.imshow("Blah", im)
 cv2.waitKey()
 
@@ -141,32 +141,32 @@ cv2.waitKey()
 cv2.destroyAllWindows()
 
 #Henry's Method to crop the center part of the number off
-def centerCorrection(x, y, w, h, correctAmountX=None, correctAmountY=None):
-    
+def centerCorrection(x, y, w, h, correct_amount_x=None, correctAmountY=None):
+
     # Adding default options so that you do not have to input the correctAmount values
-    if correctAmountY = None:
+    if correctAmountY is None:
         correctAmountY = 1
 
-    if correctAmountX = None:
-        correctAmountX = 2
+    if correct_amount_x is None:
+        correct_amount_x = 2
 
-	z = 25 / 35 * 10
-	t = (w - z) * (1 if x > im_w / 2 else -1) # if the number is to the left or to the right of the center
-	xp = x + t
-	wp = z
-	zp = 25 / 35 * correctAmountX
-	tp = wp - zp
-	xpp = xp + tp / 2
-	wpp = zp
+    z = 25 // 35 * 10
+    t = (w - z) * (1 if x > im_w // 2 else -1) # if the number is to the left or to the right of the center
+    xp = x + t
+    wp = z
+    zp = 25 // 35 * correct_amount_x
+    tp = wp - zp
+    xpp = xp + tp // 2
+    wpp = zp
 
-	z = 25 / 35 * 10
-	t = (h - z) * (1 if y > im_h / 2 else -1) # if the number is to the upper or to the lower of the center
-	yp = y + t
-	hp = z
-	zp = 25 / 35 * correctAmountY
-	tp = hp - zp
-	ypp = yp + tp / 2
-	hpp = zp
-	return xpp, ypp, wpp, hpp
+    z = 25 // 35 * 10
+    t = (h - z) * (1 if y > im_h // 2 else -1) # if the number is to the upper or to the lower of the center
+    yp = y + t
+    hp = z
+    zp = 25 // 35 * correctAmountY
+    tp = hp - zp
+    ypp = yp + tp // 2
+    hpp = zp
+    return xpp, ypp, wpp, hpp
 
 
