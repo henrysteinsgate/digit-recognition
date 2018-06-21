@@ -78,7 +78,6 @@ center_y = im_w/2
 # cv2.circle(colored,(center_x, center_y), 2, (0,0,255), -1)
 
 cv2.imshow("Denoised", erode)
-cv2.imshow("Original", colored)
 cv2.waitKey()
 
 
@@ -113,7 +112,8 @@ crop_pixel = 15
 
 for rect in rects_split:
     # Draw the rectangles
-    cv2.rectangle(im, (rect[0] + crop_pixel, rect[1] + crop_pixel), (rect[0] + rect[2] - crop_pixel, rect[1] + rect[3] - crop_pixel), (0, 255, 0), 3)
+    # cv2.rectangle(im, (rect[0] + crop_pixel, rect[1] + crop_pixel), (rect[0] + rect[2] - crop_pixel, rect[1] + rect[3] - crop_pixel), (0, 255, 0), 3) 
+    cv2.rectangle(im, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 3)
     # Make the rectangular region around the digit
     # leng = int(rect[3] * 1.6 - crop_pixel)
     # pt1 = int(rect[1] + rect[3] // 2 - leng // 2)
@@ -144,11 +144,11 @@ cv2.destroyAllWindows()
 def centerCorrection(x, y, w, h, correct_amount_x=None, correctAmountY=None):
 
     # Adding default options so that you do not have to input the correctAmount values
-    if correctAmountY is None:
+    if correctAmountY == None:
         correctAmountY = 1
 
-    if correct_amount_x is None:
-        correct_amount_x = 2
+    if correctAmountX == None:
+        correctAmountX = 2
 
     z = 25 // 35 * 10
     t = (w - z) * (1 if x > im_w // 2 else -1) # if the number is to the left or to the right of the center
