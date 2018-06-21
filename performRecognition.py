@@ -8,42 +8,24 @@ import numpy as np
 import argparse as ap
 import time
 
+global blockWidth
+blockWidth = 89
 
-#Henry's Method to crop the center part of the number off
-def centerCorrection(x, y, w, h, correct_amount_x=None, correctAmountY=None):
+#Croping the center part of the number off
+def centerCorrection(x, y, w, h):
+	offset = w - blockWidth
+	if(x > center_x):
+		x = x + offset
+		w = blockWidth
+	else:
+		w = w - offset
 
-    # Adding default options so that you do not have to input the correctAmount values
-    if correctAmountY is None:
-        correctAmountY = 8
-
-    if correct_amount_x is None:
-        correct_amount_x = 8
-
-    z = 25 // 35 * 40
-    t = (w - z) * (1 if x > im_w // 2 else -1) # if the number is to the left or to the right of the center
-    xp = x + t
-    wp = z
-    # zp = 25 // 35 * correct_amount_x
-    # tp = wp - zp
-    # xpp = xp + tp // 2
-    # wpp = zp
-
-    z = 25 // 35 * 40
-    t = (h - z) * (1 if y > im_h // 2 else -1) # if the number is to the upper or to the lower of the center
-    yp = y + t
-    hp = z
-    # zp = 25 // 35 * correctAmountY
-    # tp = hp - zp
-    # ypp = yp + tp // 2
-    # hpp = zp
-    return xp, yp, wp, hp
-
-
-
-
-
-
-
+	offset = h - blockWidth
+	if(y > center_y):
+		y = y + offset
+		h = blockWidth
+	else:
+		h = h - offset
 
 # Get the path of the training set
 parser = ap.ArgumentParser()
