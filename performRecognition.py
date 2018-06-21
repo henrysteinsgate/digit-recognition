@@ -57,8 +57,10 @@ colored = cv2.bitwise_not(colored)
 kernel = np.ones((5,5),np.uint8)
 erode = cv2.erode(colored,kernel,iterations = 1)
 
+global im_w, im_h, im_c
 im_w, im_h, im_c = im.shape
-print "width", im_w, "height", im_h
+# we do not need to print the size of the script anymore
+# print "width", im_w, "height", im_h
 
 center_x = im_h/2
 center_y = im_w/2
@@ -112,25 +114,33 @@ cv2.namedWindow("Resulting Image with Rectangular ROIs", cv2.WINDOW_NORMAL)
 cv2.imshow("Resulting Image with Rectangular ROIs", im)
 cv2.waitKey()
 
-#Henry's Method
-# def centerCorrection(x, y, w, h, correctAmount):
-# 	z = 25 / 35 * 10
-# 	t = w - z
-# 	xp = x + t
-# 	wp = z
-# 	zp = 25 / 35 * correctAmount
-# 	tp = wp - zp
-# 	xpp = xp + tp / 2
-# 	wpp = zp
+#Henry's Method to crop the center part of the number off
+def centerCorrection(x, y, w, h, correctAmountX=None, correctAmountY=None):
+    
+    # Adding default options so that you do not have to input the correctAmount values
+    if correctAmountY = None:
+        correctAmountY = 1
 
-# 	z = 25 / 35 * 10
-# 	t = h - z
-# 	yp = y + t
-# 	hp = z
-# 	zp = 25 / 35 * correctAmount
-# 	tp = hp - zp
-# 	ypp = yp + tp / 2
-# 	hpp = zp
-# 	return xpp, ypp, wpp, hpp
+    if correctAmountX = None:
+        correctAmountX = 2
+
+	z = 25 / 35 * 10
+	t = (w - z) * (1 if x > im_w / 2 else -1) # if the number is to the left or to the right of the center
+	xp = x + t
+	wp = z
+	zp = 25 / 35 * correctAmountX
+	tp = wp - zp
+	xpp = xp + tp / 2
+	wpp = zp
+
+	z = 25 / 35 * 10
+	t = (h - z) * (1 if y > im_h / 2 else -1) # if the number is to the upper or to the lower of the center
+	yp = y + t
+	hp = z
+	zp = 25 / 35 * correctAmountY
+	tp = hp - zp
+	ypp = yp + tp / 2
+	hpp = zp
+	return xpp, ypp, wpp, hpp
 
 
