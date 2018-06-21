@@ -8,6 +8,43 @@ import numpy as np
 import argparse as ap
 import time
 
+
+#Henry's Method to crop the center part of the number off
+def centerCorrection(x, y, w, h, correct_amount_x=None, correctAmountY=None):
+
+    # Adding default options so that you do not have to input the correctAmount values
+    if correctAmountY is None:
+        correctAmountY = 8
+
+    if correct_amount_x is None:
+        correct_amount_x = 8
+
+    z = 25 // 35 * 40
+    t = (w - z) * (1 if x > im_w // 2 else -1) # if the number is to the left or to the right of the center
+    xp = x + t
+    wp = z
+    # zp = 25 // 35 * correct_amount_x
+    # tp = wp - zp
+    # xpp = xp + tp // 2
+    # wpp = zp
+
+    z = 25 // 35 * 40
+    t = (h - z) * (1 if y > im_h // 2 else -1) # if the number is to the upper or to the lower of the center
+    yp = y + t
+    hp = z
+    # zp = 25 // 35 * correctAmountY
+    # tp = hp - zp
+    # ypp = yp + tp // 2
+    # hpp = zp
+    return xp, yp, wp, hp
+
+
+
+
+
+
+
+
 # Get the path of the training set
 parser = ap.ArgumentParser()
 parser.add_argument("-c", "--classiferPath", help="Path to Classifier File", required="True")
@@ -112,7 +149,14 @@ crop_pixel = 15
 
 for rect in rects_split:
     # Draw the rectangles
-    # cv2.rectangle(im, (rect[0] + crop_pixel, rect[1] + crop_pixel), (rect[0] + rect[2] - crop_pixel, rect[1] + rect[3] - crop_pixel), (0, 255, 0), 3) 
+    (x,y,w,h) = centerCorrection(rect[0],rect[1],rect[2], rect[3])
+    rect = []
+    rect.append(x)
+    rect.append(y)
+    rect.append(w)
+    rect.append(h)
+
+
     cv2.rectangle(im, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 3)
     # Make the rectangular region around the digit
     # leng = int(rect[3] * 1.6 - crop_pixel)
@@ -140,33 +184,6 @@ cv2.imshow("Resulting Image with Rectangular ROIs", im)
 cv2.waitKey()
 cv2.destroyAllWindows()
 
-#Henry's Method to crop the center part of the number off
-def centerCorrection(x, y, w, h, correct_amount_x=None, correctAmountY=None):
 
-    # Adding default options so that you do not have to input the correctAmount values
-    if correctAmountY == None:
-        correctAmountY = 1
-
-    if correctAmountX == None:
-        correctAmountX = 2
-
-    z = 25 // 35 * 10
-    t = (w - z) * (1 if x > im_w // 2 else -1) # if the number is to the left or to the right of the center
-    xp = x + t
-    wp = z
-    zp = 25 // 35 * correct_amount_x
-    tp = wp - zp
-    xpp = xp + tp // 2
-    wpp = zp
-
-    z = 25 // 35 * 10
-    t = (h - z) * (1 if y > im_h // 2 else -1) # if the number is to the upper or to the lower of the center
-    yp = y + t
-    hp = z
-    zp = 25 // 35 * correctAmountY
-    tp = hp - zp
-    ypp = yp + tp // 2
-    hpp = zp
-    return xpp, ypp, wpp, hpp
 
 

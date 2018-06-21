@@ -114,3 +114,21 @@ for rect in rects_split:
 # cv2.waitKey()
 cv2.destroyAllWindows()
 
+
+
+
+
+
+
+
+
+
+	if(x > center_x):
+		offset = int(abs(x-center_x)/factor)
+		x = x + offset
+		w = w - offset
+	else:
+		w = w + offset
+
+	if(y > center_y):
+		offset = int(abs(y-center_x)/factor)
