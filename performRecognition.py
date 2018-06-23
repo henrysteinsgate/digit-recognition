@@ -15,22 +15,21 @@ blockWidth = 89
 def centerCorrection(x, y, w, h):
 	multiplierx = abs(x - center_x) // center_x
 	multipliery = abs(y - center_y) // center_y
-	xfactor = 1.2
-	yfactor = 1.3
 
-	offset = int(w - xfactor * blockWidth * (1 + multiplierx))
+	offset = w - blockWidth * (1 + multiplierx)
 	if(x > center_x):
 		x = x + offset
 		w = blockWidth
 	else:
 		w = w - offset
 
-	offset = int(h - yfactor * blockWidth * (1 + multipliery))
+	offset = h - blockWidth * (1 + multipliery)
 	if(y > center_y):
 		y = y + offset
 		h = blockWidth
 	else:
 		h = h - offset
+	return x, y, w, h
 
 # Get the path of the training set
 parser = ap.ArgumentParser()
@@ -168,13 +167,13 @@ for rect in rects_split:
     # Draw the rectangles
     # cv2.rectangle(erode, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (255, 0, 0), 3)
     (x,y,w,h) = centerCorrection(rect[0],rect[1],rect[2], rect[3])
-    rect = []
-    rect.append(x)
-    rect.append(y)
-    rect.append(w)
-    rect.append(h)
+    # rect = []
+    # rect.append(x)
+    # rect.append(y)
+    # rect.append(w)
+    # rect.append(h)
 
-    # cv2.rectangle(im, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 3)
+    cv2.rectangle(im, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 3)
     # Make the rectangular region around the digit
     # leng = int(rect[3] * 1.6 - crop_pixel)
     # pt1 = int(rect[1] + rect[3] // 2 - leng // 2)
