@@ -175,8 +175,7 @@ for rect in rects_split:
     rect.append(w)
     rect.append(h)
 
-    cv2.rectangle(im, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 3)
-    cv2.rectangle(erode, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 3)
+    # cv2.rectangle(im, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 3)
     # Make the rectangular region around the digit
     # leng = int(rect[3] * 1.6 - crop_pixel)
     # pt1 = int(rect[1] + rect[3] // 2 - leng // 2)
@@ -185,7 +184,10 @@ for rect in rects_split:
     pt2 = int(rect[1] + rect[3] - crop_pixel)
     pt3 = int(rect[0] + crop_pixel)
     pt4 = int(rect[0] + rect[2] - crop_pixel)
-    roi = erode[pt1:pt2, pt3:pt4]
+
+    cv2.rectangle(im, (pt3, pt1), (pt4, pt2), (0, 255, 0), 3)
+
+    roi = im_th[pt1:pt2, pt3:pt4]
     # Resize the image
     roi = cv2.resize(roi, (28, 28), interpolation=cv2.INTER_AREA)
     roi = cv2.dilate(roi, (3, 3))
