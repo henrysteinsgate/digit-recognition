@@ -9,10 +9,11 @@ import argparse as ap
 import time
 
 global blockWidth
-blockWidth = 89
+blockWidth = 119
 
 # Croping the center part of the number off
 def centerCorrection(x, y, w, h):
+	print("x:", x,"y:", y,"w:", w,"h:", h)
 	multiplierx = abs(x - center_x) // center_x
 	multipliery = abs(y - center_y) // center_y
 
@@ -160,7 +161,7 @@ erode = cv2.cvtColor(erode, cv2.COLOR_GRAY2RGB)
 # the digit using Linear SVM.
 
 # Crop off part of the image for removing noisy edge
-crop_pixel = 15
+crop_pixel = 0
 
 for rect in rects_split:
 
