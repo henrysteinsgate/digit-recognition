@@ -27,4 +27,4 @@ cv2.imshow("Resized image", resized)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-cv2.imwrite("/home/hud/digit-recognition/scale-nl-2.jpg", resized)
+cv2.imwrite("/home/hud/Summer_ws/digit-recognition/image-scaled.jpg", resized)
