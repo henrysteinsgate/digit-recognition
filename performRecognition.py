@@ -9,13 +9,14 @@ import argparse as ap
 import time
 
 global blockWidth
-blockWidth = 89
+blockWidth = 119
 
 
 # Croping the center part of the number off
 def centerCorrection(x, y, w, h):
-    multiplierx = abs(x - center_x) // center_x
-    multipliery = abs(y - center_y) // center_y
+	print("x:", x,"y:", y,"w:", w,"h:", h)
+	multiplierx = abs(x - center_x) // center_x
+	multipliery = abs(y - center_y) // center_y
 
     offset = w - blockWidth * (1 + multiplierx)
     if (x > center_x):
