@@ -16,7 +16,6 @@ img_blurred_bilateral = cv2.bilateralFilter(img, 9, 10, 100)
 
 edges = cv2.Canny(img_blurred_bilateral, 200, 300)
 
-
 out = np.bitwise_or(img, edges[:, :, np.newaxis])
 
 cv2.imshow("Original", img)
