@@ -1,15 +1,6 @@
 import cv2
 import os
-import argparse as ap
-
-
-# Get the path of the training set
-parser = ap.ArgumentParser()
-parser.add_argument("-i", "--image", help="Path to Image", required="True")
-args = vars(parser.parse_args())
-
-# Load the image and the templates
-img = cv2.imread(args["image"])
+# import Grasp-Detect-Master
 
 
 def load_images_from_folder(folder):
@@ -56,6 +47,8 @@ def detect_block(block_num, image):
         else:
             top_left = max_loc
         bottom_right = (top_left[0] + w, top_left[1] + h)
+        # recognized.append([top_left, bottom_right])
+        print(top_left)
 
         if max_val >= 0.7:
             cv2.rectangle(img_show, top_left, bottom_right, (0, 255, 0), 2)
@@ -64,7 +57,6 @@ def detect_block(block_num, image):
             center_x = top_left[0] + w // 2
             center_y = top_left[1] + h // 2
             center = (center_x, center_y)
-            # number stores the block number found in frame
             locations.append(center)
             numbers.append(template_index)
 
@@ -74,21 +66,8 @@ def detect_block(block_num, image):
     cv2.waitKey()
     cv2.destroyAllWindows()
 
-    print(numbers)
-
-    if block_num not in numbers:
+    if block_num in numbers:
+        return locations[block_num]
+    else:
         print("Could not find the block you are asking for.")
         return None
-    else:
-        index = numbers.index(block_num)
-
-        # Return the coordinate of the desired block
-        cv2.circle(img_show, (locations[index][0], locations[index][1]), 10, (0, 0, 0), 4)
-        cv2.imshow("Final output", img_show)
-        print("Found block at")
-        print(locations[index])
-        cv2.waitKey()
-        return locations[index]
-
-
-detect_block(9, img)
