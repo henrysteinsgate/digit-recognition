@@ -16,11 +16,13 @@ img_blurred_bilateral = cv2.bilateralFilter(img, 9, 10, 100)
 
 edges = cv2.Canny(img_blurred_bilateral, 200, 300)
 
+out = np.bitwise_or(img, edges[:, :, np.newaxis])
+
 cv2.imshow("Original", img)
 cv2.waitKey()
 
-cv2.imshow("bilateral", img_blurred_bilateral)
+cv2.imshow("edges", edges)
 cv2.waitKey()
 
-cv2.imshow("edges", edges)
+cv2.imshow("Output", out)
 cv2.waitKey()
