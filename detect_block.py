@@ -54,7 +54,10 @@ def detect_block(block_num, image):
             cv2.rectangle(img_show, top_left, bottom_right, (0, 255, 0), 2)
             cv2.putText(img_show, str(template_index), (top_left[0], top_left[1]), cv2.FONT_HERSHEY_DUPLEX, 2,
                         (0, 255, 255), 3)
-            locations.append(top_left)
+            center_x = top_left[0] + w // 2
+            center_y = top_left[1] + h // 2
+            center = (center_x, center_y)
+            locations.append(center)
             numbers.append(template_index)
 
         template_index = template_index + 1
