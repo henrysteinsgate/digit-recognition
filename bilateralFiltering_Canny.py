@@ -12,7 +12,7 @@ img = cv2.imread(args["image"])
 
 # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-img_blurred_bilateral = cv2.bilateralFilter(img, 9, 10, 100)
+img_blurred_bilateral = cv2.bilateralFilter(img, 20, 50, 50)
 
 edges = cv2.Canny(img_blurred_bilateral, 200, 300)
 
