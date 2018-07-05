@@ -39,10 +39,11 @@ def check_intersect(line_1, line_2):
         theta2 = math.atan(m2)
         theta = int(math.degrees(theta2 - theta1))
         print("Theta is " + str(theta))
-        if (theta < 100 and theta > 80) or (theta > -100 and theta < -80):
-            return x_intersect, y_intersect, theta, True
-        else:
-            return None, None, None, False
+        # if (theta < 100 and theta > 80) or (theta > -100 and theta < -80):
+        #     return x_intersect, y_intersect, theta, True
+        # else:
+        #     return None, None, None, False
+        return x_intersect, y_intersect, theta, True
 
 
 def extend_line(line):
@@ -50,13 +51,13 @@ def extend_line(line):
     length = int(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2))
     # TODO: Adjust the following threshold to pass the lines
     threshold = 40
-    if length > threshold:
+    if length < threshold:
         return line
     else:
         # TODO: Extends to about 1.4 of its original length, might need change ratio
         ratio = 0.2
-        delta_x = (x2 - x1) * ratio
-        delta_y = (y2 - y1) * ratio
+        delta_x = int((x2 - x1) * ratio)
+        delta_y = int((y2 - y1) * ratio)
 
         extended = [x1 - delta_x, y1 - delta_x, x2 + delta_x, y2 + delta_y]
         return [extended]
@@ -117,17 +118,23 @@ ext_lines = []
 for line in lines.copy():
     new_line = extend_line(line)
     ext_lines.append(new_line)
+    # Draw Lines after extension
+    cv2.line(img, (new_line[0][0], new_line[0][1]), (new_line[0][2], new_line[0][3]), (0, 0, 255), 2)
 
 intersections = []
 
-# TODO: Expect exception when checking two same lines' intersection
+# i, j prevent from checking two same lines' intersection
+i, j = 0, 0
 for line_1 in ext_lines:
     for line_2 in ext_lines:
-        x_center, y_center, theta, found = check_intersect(line_1[0], line_2[0])
-        if found:
-            print("Found intersection")
-            new_point = Intersect(x_center, y_center, theta)
-            intersections.append(new_point)
+        if i != j:
+            x_center, y_center, theta, found = check_intersect(line_1[0], line_2[0])
+            if found:
+                print("Found intersection")
+                new_point = Intersect(x_center, y_center, theta)
+                intersections.append(new_point)
+        j = j + 1
+    i = i + 1
 
 if len(intersections) == 0:
     print("There is no intersection points")
