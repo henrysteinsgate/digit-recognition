@@ -5,7 +5,8 @@ import cv2
 import numpy as np
 import argparse as ap
 
-# Get the path of the training set
+
+# Make sure to run this code only once for a single image, running it multiple times will shrink the image smaller and smaller
 parser = ap.ArgumentParser()
 parser.add_argument("-i", "--image", help="Path to Image", required="True")
 args = vars(parser.parse_args())
@@ -13,7 +14,7 @@ args = vars(parser.parse_args())
 # Read the input image
 im = cv2.imread(args["image"])
 
-scale_percent = 20 # Percent of original size
+scale_percent = 40 # Percent of original size
 width = int(im.shape[1] * scale_percent / 100)
 height = int(im.shape[0] * scale_percent / 100)
 dim = (width, height)
@@ -27,4 +28,6 @@ cv2.imshow("Resized image", resized)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-cv2.imwrite("/home/hud/Summer_ws/digit-recognition/image-scaled.jpg", resized)
+dir = args["image"]
+
+cv2.imwrite(dir, resized)
