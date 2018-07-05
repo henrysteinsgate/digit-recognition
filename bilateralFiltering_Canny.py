@@ -2,7 +2,8 @@ from __future__ import division
 import cv2
 import argparse as ap
 import numpy as np
-from sympy import Symbol, solve
+from sympy.solvers import solve
+from sympy import Symbol
 import math
 
 
@@ -35,19 +36,18 @@ def check_intersect(line_1, line_2):
 
     # Check if intersects fall in the range of two lines
     elif solution > pt1[0] and solution < pt2[0] and solution > pt3[0] and solution < pt4[0]:
-    # else:
         print("Solution is " + str(float(solution[0])))
 
         x_intersect = int(solution[0])
         y_intersect = int(m2 * solution[0] + b2)
 
-        theta1 = math.tan(m1)
-        theta2 = math.tan(m2)
+        theta1 = math.atan(m1)
+        theta2 = math.atan(m2)
         theta = int(math.degrees(theta2 - theta1))
         print("Theta is " + str(theta))
 
         # Adjust the threshold angle below to check for perpendicular lines
-        if (theta < 120 and theta > 60) or (theta > -120 and theta < -60):
+        if (theta < 100 and theta > 80) or (theta > -100 and theta < -80):
             return x_intersect, y_intersect, theta, True
         else:
             return None, None, None, False
@@ -57,7 +57,6 @@ def check_intersect(line_1, line_2):
 
 def extend_line(line):
     x1, y1, x2, y2 = line[0]
-    print(line[0])
     length = int(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2))
     # TODO: Adjust the following threshold to pass the lines
     threshold = 40
@@ -132,7 +131,8 @@ line_cnt = 0
 for line in lines:
     for x1, y1, x2, y2 in line:
         cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        cv2.line(blank_image, (x1, y1), (x2, y2), (255, 255, 255), 2)
+        # TODO
+        # cv2.line(blank_image, (x1, y1), (x2, y2), (255, 255, 255), 2)
 
         # Label Line Recognized
         center_x = int((x1 + x2) / 2)
@@ -193,10 +193,13 @@ for point in intersections:
 #########################################################################
 
 # Fill out incomplete Rectangle
-canvas = blank_image.copy()
+
+# TODO
+# canvas = blank_image.copy()
 kernel = np.ones((5, 5), np.uint8)
-erosion = cv2.erode(canvas, kernel, iterations=20)
-dilate = cv2.dilate(erosion, kernel, iterations=20)
+# TODO
+# erosion = cv2.erode(canvas, kernel, iterations=20)
+# dilate = cv2.dilate(erosion, kernel, iterations=20)
 
 # cv2.imshow("Post-Processinged Image", canvas)
 # cv2.waitKey()
