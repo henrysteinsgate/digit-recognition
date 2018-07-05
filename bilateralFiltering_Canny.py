@@ -80,26 +80,37 @@ args = vars(parser.parse_args())
 
 # Load the image
 img = cv2.imread(args["image"])
+img = img.copy()
 
-# img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# Finding the edge of the block with bilateral filter
+img_blurred_bilateral = cv2.bilateralFilter(img, 20, 50, 50)
+edges = cv2.Canny(img_blurred_bilateral, 200, 300)
+
+# Since this is using bilateral filtering method, I dont think we need to convert the picture to grey scale anymore
+# gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# edges = cv2.Canny(gray, 50, 150, apertureSize=3)
+
+# Display the result of the edge detection
+cv2.imshow("edges", edges)
+cv2.waitKey()
+
+# lines = cv2.HoughLines(edges, 1, np.pi/180, 10)
 #
-# img_blurred_bilateral = cv2.bilateralFilter(img, 20, 50, 50)
-# edges = cv2.Canny(img_blurred_bilateral, 200, 300)
+# for line in lines:
+#     for rho, theta in line:
+#         a = np.cos(theta)
+#         b = np.sin(theta)
+#         x0 = a * rho
+#         y0 = b * rho
+#         x1 = int(x0 + 1000 * (-b))
+#         y1 = int(y0 + 1000 * (a))
+#         x2 = int(x0 - 1000 * (-b))
+#         y2 = int(y0 - 1000 * (a))
+#
+#         cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-edges = cv2.Canny(gray, 50, 150, apertureSize=3)
-
-#########################
-# Produce a image with labeled lines
-height, width, channel = img.shape
-blank_image = np.zeros((height, width, channel), np.uint8)
-
-#########################
-# Threshold Value: 18 8 20
-
-lines = cv2.HoughLinesP(edges, 1, np.pi / 180, threshold=30, minLineLength=40, maxLineGap=10)
-
-line_cnt = 1
+lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=30, minLineLength=20, maxLineGap=60)
+line_cnt = 0
 for line in lines:
     for x1, y1, x2, y2 in line:
         cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
@@ -157,9 +168,6 @@ cv2.waitKey()
 
 # cv2.imshow("Original", img)
 # cv2.waitKey()
-
-cv2.imshow("edges", edges)
-cv2.waitKey()
 
 cv2.imshow("Output", img)
 cv2.waitKey()
