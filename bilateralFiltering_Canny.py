@@ -61,7 +61,7 @@ for line in lines.copy():
     new_line = iH.extend_line(line)
     ext_lines.append(new_line)
     # Draw Lines after extension
-    # cv2.line(img, (new_line[0][0], new_line[0][1]), (new_line[0][2], new_line[0][3]), (0, 0, 255), 2)
+    cv2.line(img, (new_line[0][0], new_line[0][1]), (new_line[0][2], new_line[0][3]), (0, 0, 255), 2)
 
 print("There are " + str(len(ext_lines)) + " lines detected in the frame")
 
