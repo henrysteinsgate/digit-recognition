@@ -2,12 +2,14 @@ from __future__ import division
 from sympy.solvers import solve
 from sympy import Symbol
 import math
+import warnings
+
 
 #########################################################
 #########################################################
-# TODO: Make the following method and class a separate file and import it as module
 # Check intersection of two points, if there is return the
 # point, angle, and True; if not, return none and False
+
 def check_intersect(line_1, line_2):
     # Endpoints of the first line
     pt1 = (line_1[0], line_1[1])
@@ -23,6 +25,25 @@ def check_intersect(line_1, line_2):
     m2 = (pt4[1] - pt3[1]) / (pt4[0] - pt3[0])
     b2 = pt3[1] - pt3[0] * m2
 
+    # Ignore warning when getting a infinity slope
+    warnings.filterwarnings("ignore")
+
+    # Consider if the lines are horizontal or vertical to cause a non-resolvable slope for intersection
+    if m1 == m2:
+        return None, None, None, False
+    elif m1 == -float('Inf') and m2 == 0.0:
+        if pt3[0] <= pt1[0] <= pt4[0]:
+            x_intersect = pt1[0]
+            y_intersect = pt3[1]
+            theta = 90
+            return x_intersect, y_intersect, theta, True
+    elif m1 == 0.0 and m2 == -float('Inf'):
+        if pt1[0] <= pt3[0] <= pt2[0]:
+            x_intersect = pt3[0]
+            y_intersect = pt1[1]
+            theta = 90
+            return x_intersect, y_intersect, theta, True
+
     # Solve for intersection
     x = Symbol('x')
     solution = solve((m1 - m2) * x + b1 - b2, x)
@@ -30,7 +51,7 @@ def check_intersect(line_1, line_2):
         return None, None, None, False
 
     # Check if intersects fall in the range of two lines
-    elif solution > pt1[0] and solution < pt2[0] and solution > pt3[0] and solution < pt4[0]:
+    elif pt1[0] <= solution <= pt2[0] and pt3[0] <= solution <= pt4[0]:
         # print("Solution is " + str(float(solution[0])))
 
         x_intersect = int(solution[0])
@@ -39,15 +60,14 @@ def check_intersect(line_1, line_2):
         theta1 = math.atan(m1)
         theta2 = math.atan(m2)
         theta = int(math.degrees(theta2 - theta1))
-        # print("Theta is " + str(theta))
 
         # Adjust the threshold angle below to check for perpendicular lines
-        if (theta < 100 and theta > 80) or (theta > -100 and theta < -80):
+        if (100 > theta > 80) or (-100 < theta < -80):
             return x_intersect, y_intersect, theta, True
         else:
             return None, None, None, False
     else:
-         return None, None, None, False
+        return None, None, None, False
 
 
 def extend_line(line):
@@ -58,7 +78,7 @@ def extend_line(line):
     if length < threshold:
         return line
     else:
-        # TODO: Extends to about 1.8 of its original length, might need change ratio
+        # TODO: Extends to about 2.2 of its original length, might need change ratio
         ratio = 0.6
         delta_x = int(abs(x2 - x1) * ratio)
         delta_y = int(abs(y2 - y1) * ratio)

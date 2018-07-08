@@ -23,8 +23,8 @@ edges = cv2.Canny(img_blurred_bilateral, 200, 300)
 # edges = cv2.Canny(gray, 50, 150, apertureSize=3)
 
 # Display the result of the edge detection
-cv2.imshow("edges", edges)
-cv2.waitKey()
+# cv2.imshow("edges", edges)
+# cv2.waitKey()
 
 # lines = cv2.HoughLines(edges, 1, np.pi/180, 10)
 #
@@ -45,9 +45,7 @@ lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=30, minLineLength=20, max
 line_cnt = 0
 for line in lines:
     for x1, y1, x2, y2 in line:
-        cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        # TODO: what are you trying to do with this blank image here?
-        # cv2.line(blank_image, (x1, y1), (x2, y2), (255, 255, 255), 2)
+        cv2.line(img, (x1, y1), (x2, y2), (0, 255, 255), 2)
 
         # Label Line Recognized
         center_x = int((x1 + x2) / 2)
@@ -63,40 +61,38 @@ for line in lines.copy():
     new_line = iH.extend_line(line)
     ext_lines.append(new_line)
     # Draw Lines after extension
-    cv2.line(img, (new_line[0][0], new_line[0][1]), (new_line[0][2], new_line[0][3]), (0, 0, 255), 2)
+    # cv2.line(img, (new_line[0][0], new_line[0][1]), (new_line[0][2], new_line[0][3]), (0, 0, 255), 2)
+
+print("There are " + str(len(ext_lines)) + " lines detected in the frame")
 
 intersections = []
 
 # i, j prevent from checking two same lines' intersection
-i, j = 0, 0
-loop_cnt = 0
-# TODO Get rid of the duplicates intersection while looping
+i = 0
+
 for line_1 in ext_lines:
+    j = 0
     for line_2 in ext_lines:
-        # if i < j:
+        if i < j:
+            x_center, y_center, theta, found = iH.check_intersect(line_1[0], line_2[0])
+            if found:
+                new_point = iH.Intersect(x_center, y_center, theta)
+                print("The coordinate is (" + str(new_point.x) + ", " + str(new_point.y) + ")")
 
-        x_center, y_center, theta, found = iH.check_intersect(line_1[0], line_2[0])
-        if found:
-            print("Found intersection")
-            new_point = iH.Intersect(x_center, y_center, theta)
-            print("The coordinate is " + str(new_point.x) + ", " + str(new_point.y))
+                # new_img = img.copy()
+                # cv2.line(new_img, (line_1[0][0], line_1[0][1]), (line_1[0][2], line_1[0][3]), (0, 0, 255), 2)
+                # cv2.line(new_img, (line_2[0][0], line_2[0][1]), (line_2[0][2], line_2[0][3]), (0, 0, 255), 2)
+                # cv2.circle(new_img, (new_point.x, new_point.y), 9, (255, 255, 255), -1)
+                # cv2.imshow("Result", new_img)
+                # cv2.waitKey()
+                # cv2.destroyAllWindows()
 
-            # new_img = img.copy()
-            # cv2.line(new_img, (line_1[0][0], line_1[0][1]), (line_1[0][2], line_1[0][3]), (0, 0, 255), 2)
-            # cv2.line(new_img, (line_2[0][0], line_2[0][1]), (line_2[0][2], line_2[0][3]), (0, 0, 255), 2)
-            # cv2.circle(new_img, (new_point.x, new_point.y), 9, (255, 255, 255), -1)
-            # cv2.imshow("Result", new_img)
-            # cv2.waitKey()
-            # cv2.destroyAllWindows()
-
-            cv2.circle(img, (new_point.x, new_point.y), 9, (255, 255, 255), -1)
-            intersections.append(new_point)
+                cv2.circle(img, (new_point.x, new_point.y), 9, (255, 255, 255), -1)
+                intersections.append(new_point)
 
         j = j + 1
-        loop_cnt = loop_cnt + 1
     i = i + 1
 
-print("Loop Count: " + str(loop_cnt))
 print("Number of Intersections: " + str(len(intersections)))
 
 if len(intersections) == 0:
@@ -105,13 +101,12 @@ if len(intersections) == 0:
 # Label all the intersections
 for point in intersections:
     cv2.circle(img, (point.x, point.y), 7, (255, 255, 255), -1)
+
 #########################################################################
 
 # Fill out incomplete Rectangle
 
-# TODO: what are you trying to do with this blank image here?
-# canvas = blank_image.copy()
-kernel = np.ones((5, 5), np.uint8)
+# kernel = np.ones((5, 5), np.uint8)
 # erosion = cv2.erode(canvas, kernel, iterations=20)
 # dilate = cv2.dilate(erosion, kernel, iterations=20)
 
