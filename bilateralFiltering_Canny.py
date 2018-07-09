@@ -67,7 +67,7 @@ lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=32, minLineLength=20, max
 line_cnt = 0
 for line in lines:
     for x1, y1, x2, y2 in line:
-        cv2.line(img, (x1, y1), (x2, y2), (0, 255, 255), 2)
+        cv2.line(img, (x1, y1), (x2, y2), (0, 255, 255), 1)
 
         # Label Line Recognized
         center_x = int((x1 + x2) / 2)
@@ -83,7 +83,7 @@ for line in lines.copy():
     new_line = iH.extend_line(line)
     ext_lines.append(new_line)
     # Draw Lines after extension
-    cv2.line(img, (new_line[0][0], new_line[0][1]), (new_line[0][2], new_line[0][3]), (0, 0, 255), 2)
+    cv2.line(img, (new_line[0][0], new_line[0][1]), (new_line[0][2], new_line[0][3]), (0, 0, 255), 1)
 
 print("There are " + str(len(ext_lines)) + " lines detected in the frame")
 
@@ -116,9 +116,9 @@ for line_1 in ext_lines:
 
 intersections = iH.rm_nearby_intersect(intersections)
 
-# print("Line 7 is: " + str(ext_lines[1]))
-# print("Line 10 is: " + str(ext_lines[10]))
-# print("Intersection is" + str(iH.check_intersect(ext_lines[1][0], ext_lines[10][0])))
+# print("Line 3 is: " + str(ext_lines[3]))
+# print("Line 11 is: " + str(ext_lines[11]))
+# print("Intersection is" + str(iH.check_intersect(ext_lines[3][0], ext_lines[11][0])))
 
 print("Number of Intersections: " + str(len(intersections)))
 

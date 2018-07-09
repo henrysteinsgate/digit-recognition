@@ -188,7 +188,7 @@ def rm_shadow(image):
             lim_max = 100
 
             if lim_min < r < lim_max and lim_min < g < lim_max and lim_min < b < lim_max:
-                image[y, x] = [120, 120, 120]
+                image[y, x] = [150, 150, 150]
 
     return image
 
