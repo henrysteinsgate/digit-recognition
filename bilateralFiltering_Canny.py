@@ -45,22 +45,8 @@ edges = cv2.Canny(img_blurred_bilateral, 200, 300)
 
 # Display the result of the edge detection
 cv2.imshow("edges", edges)
-cv2.waitKey()
+# cv2.waitKey()
 
-# lines = cv2.HoughLines(edges, 1, np.pi/180, 10)
-#
-# for line in lines:
-#     for rho, theta in line:
-#         a = np.cos(theta)
-#         b = np.sin(theta)
-#         x0 = a * rho
-#         y0 = b * rho
-#         x1 = int(x0 + 1000 * (-b))
-#         y1 = int(y0 + 1000 * (a))
-#         x2 = int(x0 - 1000 * (-b))
-#         y2 = int(y0 - 1000 * (a))
-#
-#         cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
 # threshold=30, minLineLength=20, maxLineGap=60
 
 lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=32, minLineLength=20, maxLineGap=60)
@@ -116,9 +102,9 @@ for line_1 in ext_lines:
 
 intersections = iH.rm_nearby_intersect(intersections)
 
-print("First line is: " + str(ext_lines[1]))
-print("Second line is: " + str(ext_lines[5]))
-print("Intersection is" + str(iH.check_intersect(ext_lines[1][0], ext_lines[5][0])))
+# print("First line is: " + str(ext_lines[12]))
+# print("Second line is: " + str(ext_lines[3]))
+# print("Intersection is" + str(iH.check_intersect(ext_lines[12][0], ext_lines[3][0])))
 
 print("Number of Intersections: " + str(len(intersections)))
 
@@ -148,9 +134,9 @@ for point in intersections:
 cv2.imshow("Output", img)
 cv2.waitKey()
 
-height, width, _ = img.shape
-blank_image = np.zeros((height,width,3), np.uint8)
-for point in intersections:
-    cv2.circle(blank_image, (point.x, point.y), 5, (255, 255, 255), -1)
-cv2.imshow("Only the dots", blank_image)
-cv2.waitKey()
+# height, width, _ = img.shape
+# blank_image = np.zeros((height,width,3), np.uint8)
+# for point in intersections:
+#     cv2.circle(blank_image, (point.x, point.y), 5, (255, 255, 255), -1)
+# cv2.imshow("Only the dots", blank_image)
+# cv2.waitKey()

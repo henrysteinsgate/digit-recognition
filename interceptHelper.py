@@ -80,73 +80,79 @@ def extend_line(line):
     x1, y1, x2, y2 = line[0]
     length = int(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2))
     # TODO: Adjust the following threshold to pass the lines
-    threshold = 200
-    if length > threshold:
+    one_block_len = 90
+    ratio = float(3 * (one_block_len - length)/length)
+    if one_block_len <= length <= 1.5 * one_block_len:
+        # print("One Block")
         return line
-    else:
-        # TODO: Extends to about 2.2 of its original length, might need change ratio
-        ratio = 80/length
+    elif length > 1.5 * one_block_len:
+        # print("Two Blocks")
+        ratio = float((2 * one_block_len - length) / length)
+
+    # TODO: Extends lines based on its length, might need change ratio
         # ratio = 0.6
-        delta_x = int(abs(x2 - x1) * ratio)
-        delta_y = int(abs(y2 - y1) * ratio)
-        x1_p = x1 - delta_x
-        x2_p = x2 + delta_x
-        if y1 > y2:
-            y1_p = y1 + delta_y
-            y2_p = y2 - delta_y
-        else:
-            y1_p = y1 - delta_y
-            y2_p = y2 + delta_y
-        extended = [x1_p, y1_p, x2_p, y2_p]
-
-        return [extended]
-
-
-def rm_nearby_lines(lines):
-    for line_1 in lines:
-        # Endpoints of the first line
-        pt1 = (line_1[0], line_1[1])
-        pt2 = (line_1[2], line_1[3])
-
-        # Calculate slope and y-intersect of each line
-        m1 = (pt2[1] - pt1[1]) / (pt2[0] - pt1[0])
-        b1 = pt1[1] - pt1[0] * m1
-
-        for line_2 in lines:
-            # Endpoints of the second line
-            pt3 = (line_2[0], line_2[1])
-            pt4 = (line_2[2], line_2[3])
-
-            m2 = (pt4[1] - pt3[1]) / (pt4[0] - pt3[0])
-            b2 = pt3[1] - pt3[0] * m2
-
-            if abs(m1 - m2) < 0:
-                return None
+    delta_x = int(abs(x2 - x1) * ratio)
+    delta_y = int(abs(y2 - y1) * ratio)
+    x1_p = x1 - delta_x
+    x2_p = x2 + delta_x
+    if y1 > y2:
+        y1_p = y1 + delta_y
+        y2_p = y2 - delta_y
+    else:
+        y1_p = y1 - delta_y
+        y2_p = y2 + delta_y
+    extended = [x1_p, y1_p, x2_p, y2_p]
+    Extended_Length = int(math.sqrt((x2_p - x1_p) ** 2 + (y2_p - y1_p) ** 2))
+    # print("Ratio is: " + str(ratio))
+    # print("Extended Length is: " + str(Extended_Length))
+    return [extended]
 
 
-def increase_contrast(img):
-    lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
-    cv2.imshow("lab", lab)
+# def rm_nearby_lines(lines):
+#     for line_1 in lines:
+#         # Endpoints of the first line
+#         pt1 = (line_1[0], line_1[1])
+#         pt2 = (line_1[2], line_1[3])
+#
+#         # Calculate slope and y-intersect of each line
+#         m1 = (pt2[1] - pt1[1]) / (pt2[0] - pt1[0])
+#         b1 = pt1[1] - pt1[0] * m1
+#
+#         for line_2 in lines:
+#             # Endpoints of the second line
+#             pt3 = (line_2[0], line_2[1])
+#             pt4 = (line_2[2], line_2[3])
+#
+#             m2 = (pt4[1] - pt3[1]) / (pt4[0] - pt3[0])
+#             b2 = pt3[1] - pt3[0] * m2
+#
+#             if abs(m1 - m2) < 0:
+#                 return None
 
-    # -----Splitting the LAB image to different channels-------------------------
-    l, a, b = cv2.split(lab)
-    cv2.imshow('l_channel', l)
-    cv2.imshow('a_channel', a)
-    cv2.imshow('b_channel', b)
 
-    # -----Applying CLAHE to L-channel-------------------------------------------
-    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
-    cl = clahe.apply(l)
-    cv2.imshow('CLAHE output', cl)
-
-    # -----Merge the CLAHE enhanced L-channel with the a and b channel-----------
-    limg = cv2.merge((cl, a, b))
-    cv2.imshow('limg', limg)
-
-    # -----Converting image from LAB Color model to RGB model--------------------
-    final = cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
-
-    return final
+# def increase_contrast(img):
+#     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+#     cv2.imshow("lab", lab)
+#
+#     # -----Splitting the LAB image to different channels-------------------------
+#     l, a, b = cv2.split(lab)
+#     cv2.imshow('l_channel', l)
+#     cv2.imshow('a_channel', a)
+#     cv2.imshow('b_channel', b)
+#
+#     # -----Applying CLAHE to L-channel-------------------------------------------
+#     clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+#     cl = clahe.apply(l)
+#     cv2.imshow('CLAHE output', cl)
+#
+#     # -----Merge the CLAHE enhanced L-channel with the a and b channel-----------
+#     limg = cv2.merge((cl, a, b))
+#     cv2.imshow('limg', limg)
+#
+#     # -----Converting image from LAB Color model to RGB model--------------------
+#     final = cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
+#
+#     return final
 
 
 def rm_nearby_intersect(intersections):
@@ -155,7 +161,7 @@ def rm_nearby_intersect(intersections):
         for point_1 in intersections:
             j = 0
             for point_2 in intersections:
-                if i != j:
+                if i < j:
                     x1, y1 = point_1.x, point_1.y
                     x2, y2 = point_2.x, point_2.y
                     if abs(x1 - x2) <= 15 and abs(y1 - y2) <= 15:
@@ -165,15 +171,15 @@ def rm_nearby_intersect(intersections):
     return intersections
 
 
-def adjust_gamma(image, gamma=1.0):
-    # build a lookup table mapping the pixel values [0, 255] to
-    # their adjusted gamma values
-    invGamma = 1.0 / gamma
-    table = np.array([((i / 255.0) ** invGamma) * 255
-                      for i in np.arange(0, 256)]).astype("uint8")
-
-    # apply gamma correction using the lookup table
-    return cv2.LUT(image, table)
+# def adjust_gamma(image, gamma=1.0):
+#     # build a lookup table mapping the pixel values [0, 255] to
+#     # their adjusted gamma values
+#     invGamma = 1.0 / gamma
+#     table = np.array([((i / 255.0) ** invGamma) * 255
+#                       for i in np.arange(0, 256)]).astype("uint8")
+#
+#     # apply gamma correction using the lookup table
+#     return cv2.LUT(image, table)
 
 
 def rm_shadow(image):
