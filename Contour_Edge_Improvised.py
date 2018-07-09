@@ -26,10 +26,9 @@ edged = cv2.Canny(gray, 75, 200)
 
 # show the original image and the edge detected image
 print("STEP 1: Edge Detection")
-cv2.imshow("Image", image)
 cv2.imshow("Edged", edged)
 cv2.waitKey(0)
-cv2.destroyAllWindows()
+# cv2.destroyAllWindows()
 
 # find the contours in the edged image, keeping only the
 # largest ones, and initialize the screen contour

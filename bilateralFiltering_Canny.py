@@ -14,9 +14,29 @@ args = vars(parser.parse_args())
 img = cv2.imread(args["image"])
 img = img.copy()
 
+##################
+# # Gamma Correction
+# gamma = 2.0
+# img = iH.adjust_gamma(img, gamma=gamma)
+# cv2.imshow("Gamma Corrected", img)
+# cv2.waitKey()
+##################
+
+# img = iH.increase_contrast(img)
+
+img_shadowless = iH.rm_shadow(img)
+cv2.imshow("Removed Shadow", img)
+
+#####################################
+# Pre-Process Image
+kernel = np.ones((5, 5), np.uint8)
+img_erosion = cv2.erode(img_shadowless, kernel, iterations=1)
+img_dilation = cv2.dilate(img_erosion, kernel, iterations=2)
+####################################
+
 # 20, 50, 50
 # Finding the edge of the block with bilateral filter
-img_blurred_bilateral = cv2.bilateralFilter(img, 20, 50, 50)
+img_blurred_bilateral = cv2.bilateralFilter(img_dilation, 20, 50, 50)
 edges = cv2.Canny(img_blurred_bilateral, 200, 300)
 
 # Since this is using bilateral filtering method, I dont think we need to convert the picture to grey scale anymore
@@ -94,11 +114,11 @@ for line_1 in ext_lines:
         j = j + 1
     i = i + 1
 
-iH.rm_nearby_intersect(intersections)
+intersections = iH.rm_nearby_intersect(intersections)
 
-# print("Line 5 is: " + str(ext_lines[5]))
+# print("Line 7 is: " + str(ext_lines[1]))
 # print("Line 10 is: " + str(ext_lines[10]))
-# print("Intersection is" + str(iH.check_intersect(ext_lines[5][0], ext_lines[10][0])))
+# print("Intersection is" + str(iH.check_intersect(ext_lines[1][0], ext_lines[10][0])))
 
 print("Number of Intersections: " + str(len(intersections)))
 
