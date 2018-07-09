@@ -138,5 +138,19 @@ height, width, _ = img.shape
 blank_image = np.zeros((height,width,3), np.uint8)
 for point in intersections:
     cv2.circle(blank_image, (point.x, point.y), 5, (255, 255, 255), -1)
+
+# Based on found intersections, reconstruct rectangles
+found_rects = iH.categorize_rect(intersections)
+
+# Remove false positives
+found_rect_centers = iH.rm_duplicates(found_rects, intersections)
+
+# Draw the center of found rectangles
+for center in found_rect_centers:
+    print(str(int(center[0])) + " " + str(int(center[1])))
+
+    cv2.circle(blank_image, (int(center[0]), int(center[1])), 7, (0, 255, 255), -1)
+print("How many rects found? " + str(len(found_rect_centers)))
+
 cv2.imshow("Only the dots", blank_image)
 cv2.waitKey()

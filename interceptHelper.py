@@ -181,6 +181,40 @@ def rm_nearby_intersect(intersections):
 #     # apply gamma correction using the lookup table
 #     return cv2.LUT(image, table)
 
+def rm_duplicates(rects, intersects):
+    centers = []
+    # centers.append([rects[0].center.x, rects[0].center.y])
+    # for rect in rects:
+    #     for center in centers:
+    #         if rect.center.x != center[0] and rect.center.y != center[1]:
+    #             new_center = [rect.center.x, rect.center.y]
+    #             centers.append(new_center)
+    return centers
+    # if len(rects) != 0 and len(intersects) != 0:
+    #     i = 0
+    #     for rect in rects:
+    #         j = 0
+    #         x1 = rect.center.x
+    #         y1 = rect.center.y
+    #         for rect_2 in rects:
+    #             x2 = rect_2.center.x
+    #             y2 = rect_2.center.y
+    #             # if i < j:
+    #             #     if abs(x1 - x2) <= 10 and abs(y1 - y2) <= 10:
+    #             #         rects.remove(rect_2)
+    #             if abs(x1 - x2) <= 10 and abs(y1 - y2) <= 10:
+    #                 rects.remove(rect_2)
+    #             j = j + 1
+    #         # k = 0
+    #         # for intersect in intersects:
+    #         #     x2 = intersect.x
+    #         #     y2 = intersect.y
+    #         #     if i < k:
+    #         #         if abs(x1 - x2) <= 15 and abs(y1 - y2) <= 15:
+    #         #             rects.remove(rects[k])
+    #         #         k = k + 1
+    #         i = i + 1
+
 
 def rm_shadow(image):
 
@@ -216,8 +250,12 @@ class Line:
         self.theta = math.atan2((start_point.y - end_point.y), (start_point.x - end_point.x))
         self.length = math.hypot((start_point.x - end_point.x), (start_point.y - end_point.y))
 
-def is_in_range_of_a_circle(point1, point2, radius_threshold):
+
+def is_in_range_of_a_circle(point1, point2, radius_threshold=None):
+    if radius_threshold is None:
+        radius_threshold = 15
     return math.hypot((point2.x -point1.x), (point2.y - point1.y)) < radius_threshold
+
 
 def categorize_rect(intersections):
     list_of_squares = []
@@ -240,17 +278,17 @@ def categorize_rect(intersections):
                 possible_3_c = Intersect(midPoint.x + math.sin(base_line.theta) * base_line.length, midPoint.y
                                        - math.cos(base_line.theta) * base_line.length)
                 for third_point in tmp_intersection:
-                    if is_in_range_of_a_circle(possible_1, third_point, 5):
+                    if is_in_range_of_a_circle(possible_1, third_point):
                         for forth_point in tmp_intersection:
-                            if is_in_range_of_a_circle(possible_1_c, forth_point, 5):
+                            if is_in_range_of_a_circle(possible_1_c, forth_point):
                                 list_of_squares.append(Rectangle(starting_point, next_point, third_point, forth_point))
-                    if is_in_range_of_a_circle(possible_2, third_point, 5):
+                    if is_in_range_of_a_circle(possible_2, third_point):
                         for forth_point in tmp_intersection:
-                            if is_in_range_of_a_circle(possible_2_c, forth_point, 5):
+                            if is_in_range_of_a_circle(possible_2_c, forth_point):
                                 list_of_squares.append(Rectangle(starting_point, next_point, third_point, forth_point))
-                    if is_in_range_of_a_circle(possible_3, third_point, 5):
+                    if is_in_range_of_a_circle(possible_3, third_point):
                         for forth_point in tmp_intersection:
-                            if is_in_range_of_a_circle(possible_3_c, forth_point, 5):
+                            if is_in_range_of_a_circle(possible_3_c, forth_point):
                                 list_of_squares.append(Rectangle(starting_point, next_point, third_point, forth_point))
     return list_of_squares
 
@@ -268,10 +306,10 @@ class Rectangle:
         self.point2 = point2
         self.point3 = point3
         if point4 is None:
-            self.center = self.find_its_center_3(self)
+            self.center = self.find_its_center_3()
         else:
             self.p = [point1, point2, point3, point4]
-            self.center = self.find_its_center_4(self)
+            self.center = self.find_its_center_4()
 
     def find_its_center_3(self):
         length1 = math.hypot((self.point1.x - self.point2.x), (self.point1.y - self.point2.y))
