@@ -132,9 +132,44 @@ def rm_nearby_intersect(intersections):
                 j = j + 1
             i = i + 1
 
+def categorize_rect(intersections):
+
+
+def mid_point(point1, point2):
+    return Intersect((point1.x + point2.x)/2, (point1.y + point2.y)/2)
 
 class Intersect:
-    def __init__(self, x_intersect, y_intersect, theta):
+    def __init__(self, x_intersect, y_intersect, theta=None):
         self.x = x_intersect
         self.y = y_intersect
-        self.theta = theta
+        if theta is not None:
+            self.theta = theta
+
+class Rectangle:
+    def __init__(self, index, point1, point2, point3, point4 = None):
+        self.center = Intersect(0,0)
+        self.index = index
+        self.point1 = point1
+        self.point2 = point2
+        self.point3 = point3
+        if point4 is None:
+            self.center = self.find_its_center_3(self)
+        else:
+            self.center = self.find_its_center_4(self)
+
+    def find_its_center_3(self):
+        length1 = math.hypot(self.point1, self.point2)
+        length2 = math.hypot(self.point2, self.point3)
+        length3 = math.hypot(self.point1, self.point3)
+        if length1 >= length2 and length1 >= length3:
+            center = mid_point(self.point1,self.point2)
+        elif length2 >= length1 and length2 >= length3:
+            center = mid_point(self.point2,self.point3)
+        else:
+            center = mid_point(self.point1, self.point3)
+        return center
+
+# TODO: add method for 4 points given
+    def find_its_center_4(self):
+        center = Intersect(0,0)
+        return center
