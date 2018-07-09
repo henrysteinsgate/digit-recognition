@@ -54,3 +54,7 @@ python performRecognition.py -c digits_cls.pkl -i photo_1.jpg
 * Add a CNN Based approach
 * Reject bounding boxes lesser than some area
 * Look into user errors
+
+# Forked Project
+
+* being able to detect uniform colored blocks in 3D from the top view

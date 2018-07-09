@@ -5,6 +5,7 @@ import math
 import warnings
 import cv2
 import numpy as np
+import time
 
 
 #########################################################
@@ -258,6 +259,7 @@ def is_in_range_of_a_circle(point1, point2, radius_threshold=None):
 
 
 def categorize_rect(intersections):
+    start_time = time.time()
     list_of_squares = []
     tmp_intersection = intersections
     for starting_point in tmp_intersection:
@@ -290,6 +292,8 @@ def categorize_rect(intersections):
                         for forth_point in tmp_intersection:
                             if is_in_range_of_a_circle(possible_3_c, forth_point):
                                 list_of_squares.append(Rectangle(starting_point, next_point, third_point, forth_point))
+    elapsed_time = time.time() - start_time
+    print("the time elapsed for categorizing square is " + str(elapsed_time))
     return list_of_squares
 
 
@@ -298,7 +302,7 @@ def mid_point(point1, point2):
 
 
 class Rectangle:
-    def __init__(self, point1, point2, point3, point4 = None, index=None,):
+    def __init__(self, point1, point2, point3, point4=None, index=None,):
         self.center = Intersect(0, 0)
         if index is not None:
             self.index = index
