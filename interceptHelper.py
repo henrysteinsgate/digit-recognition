@@ -252,7 +252,7 @@ def categorize_rect(intersections):
                         for forth_point in tmp_intersection:
                             if is_in_range_of_a_circle(possible_3_c, forth_point, 5):
                                 list_of_squares.append(Rectangle(starting_point, next_point, third_point, forth_point))
-                return None
+    return list_of_squares
 
 
 def mid_point(point1, point2):
