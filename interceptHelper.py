@@ -31,14 +31,14 @@ def check_intersect(line_1, line_2):
     # Consider if the lines are horizontal or vertical to cause a non-resolvable slope for intersection
     if m1 == m2:
         return None, None, None, False
-    elif m1 == -float('Inf') and m2 == 0.0:
-        if pt3[0] <= pt1[0] <= pt4[0]:
+    elif m1 == -float('Inf') and abs(m2) <= 0.05:
+        if pt3[0] <= pt1[0] <= pt4[0] and min(pt1[1], pt2[1]) <= pt3[1] <= max(pt1[1], pt2[1]):
             x_intersect = pt1[0]
             y_intersect = pt3[1]
             theta = 90
             return x_intersect, y_intersect, theta, True
-    elif m1 == 0.0 and m2 == -float('Inf'):
-        if pt1[0] <= pt3[0] <= pt2[0]:
+    elif abs(m1) <= 0.05 and m2 == -float('Inf'):
+        if pt1[0] <= pt3[0] <= pt2[0] and min(pt3[1], pt4[1]) <= pt1[1] <= max(pt3[1], pt4[1]):
             x_intersect = pt3[0]
             y_intersect = pt1[1]
             theta = 90
@@ -93,6 +93,44 @@ def extend_line(line):
         extended = [x1_p, y1_p, x2_p, y2_p]
 
         return [extended]
+
+
+def rm_nearby_lines(lines):
+    for line_1 in lines:
+        # Endpoints of the first line
+        pt1 = (line_1[0], line_1[1])
+        pt2 = (line_1[2], line_1[3])
+
+        # Calculate slope and y-intersect of each line
+        m1 = (pt2[1] - pt1[1]) / (pt2[0] - pt1[0])
+        b1 = pt1[1] - pt1[0] * m1
+
+        for line_2 in lines:
+            # Endpoints of the second line
+            pt3 = (line_2[0], line_2[1])
+            pt4 = (line_2[2], line_2[3])
+
+            m2 = (pt4[1] - pt3[1]) / (pt4[0] - pt3[0])
+            b2 = pt3[1] - pt3[0] * m2
+
+            if abs(m1 - m2) < 0:
+                return None
+
+
+def rm_nearby_intersect(intersections):
+    if len(intersections) != 0:
+        i = 0
+        for line_1 in intersections:
+            j = 0
+            for line_2 in intersections:
+                if i != j:
+                    x1, y1 = line_1.x, line_1.y
+                    x2, y2 = line_2.x, line_2.y
+                    if abs(x1 - x2) <= 15 and abs(y1 - y2) <= 15:
+                        print(str(abs(x1 - x2)))
+                        intersections.remove(line_2)
+                j = j + 1
+            i = i + 1
 
 
 class Intersect:

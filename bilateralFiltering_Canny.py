@@ -14,6 +14,7 @@ args = vars(parser.parse_args())
 img = cv2.imread(args["image"])
 img = img.copy()
 
+# 20, 50, 50
 # Finding the edge of the block with bilateral filter
 img_blurred_bilateral = cv2.bilateralFilter(img, 20, 50, 50)
 edges = cv2.Canny(img_blurred_bilateral, 200, 300)
@@ -23,8 +24,8 @@ edges = cv2.Canny(img_blurred_bilateral, 200, 300)
 # edges = cv2.Canny(gray, 50, 150, apertureSize=3)
 
 # Display the result of the edge detection
-# cv2.imshow("edges", edges)
-# cv2.waitKey()
+cv2.imshow("edges", edges)
+cv2.waitKey()
 
 # lines = cv2.HoughLines(edges, 1, np.pi/180, 10)
 #
@@ -40,8 +41,9 @@ edges = cv2.Canny(img_blurred_bilateral, 200, 300)
 #         y2 = int(y0 - 1000 * (a))
 #
 #         cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+# threshold=30, minLineLength=20, maxLineGap=60
 
-lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=30, minLineLength=20, maxLineGap=60)
+lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=32, minLineLength=20, maxLineGap=60)
 line_cnt = 0
 for line in lines:
     for x1, y1, x2, y2 in line:
@@ -67,6 +69,7 @@ print("There are " + str(len(ext_lines)) + " lines detected in the frame")
 
 intersections = []
 
+
 # i, j prevent from checking two same lines' intersection
 i = 0
 
@@ -77,7 +80,7 @@ for line_1 in ext_lines:
             x_center, y_center, theta, found = iH.check_intersect(line_1[0], line_2[0])
             if found:
                 new_point = iH.Intersect(x_center, y_center, theta)
-                print("The coordinate is (" + str(new_point.x) + ", " + str(new_point.y) + ")")
+                # print("The coordinate is (" + str(new_point.x) + ", " + str(new_point.y) + ")")
 
                 # new_img = img.copy()
                 # cv2.line(new_img, (line_1[0][0], line_1[0][1]), (line_1[0][2], line_1[0][3]), (0, 0, 255), 2)
@@ -86,12 +89,16 @@ for line_1 in ext_lines:
                 # cv2.imshow("Result", new_img)
                 # cv2.waitKey()
                 # cv2.destroyAllWindows()
-
-                cv2.circle(img, (new_point.x, new_point.y), 9, (255, 255, 255), -1)
                 intersections.append(new_point)
 
         j = j + 1
     i = i + 1
+
+iH.rm_nearby_intersect(intersections)
+
+# print("Line 5 is: " + str(ext_lines[5]))
+# print("Line 10 is: " + str(ext_lines[10]))
+# print("Intersection is" + str(iH.check_intersect(ext_lines[5][0], ext_lines[10][0])))
 
 print("Number of Intersections: " + str(len(intersections)))
 
@@ -100,7 +107,7 @@ if len(intersections) == 0:
 
 # Label all the intersections
 for point in intersections:
-    cv2.circle(img, (point.x, point.y), 7, (255, 255, 255), -1)
+    cv2.circle(img, (point.x, point.y), 5, (255, 255, 255), -1)
 
 #########################################################################
 
