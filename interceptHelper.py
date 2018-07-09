@@ -232,8 +232,8 @@ def categorize_rect(intersections):
                                        + math.cos(base_line.theta) * base_line.length)
                 possible_2 = Intersect(starting_point.x + math.sin(base_line.theta) * base_line.length, starting_point.y
                                        - math.cos(base_line.theta) * base_line.length)
-                possible_2_c = Intersect(next_point.x - math.sin(base_line.theta) * base_line.length, next_point.y
-                                       + math.cos(base_line.theta) * base_line.length)
+                possible_2_c = Intersect(next_point.x + math.sin(base_line.theta) * base_line.length, next_point.y
+                                       - math.cos(base_line.theta) * base_line.length)
                 midPoint = mid_point(starting_point, next_point)
                 possible_3 = Intersect(midPoint.x - math.sin(base_line.theta) * base_line.length / 2, midPoint.y +
                                        math.cos(base_line.theta) * base_line.length / 2)
