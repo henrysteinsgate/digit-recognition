@@ -198,44 +198,94 @@ def rm_shadow(image):
 
     return image
 
+
+class Intersect:
+    def __init__(self, x_intersect, y_intersect, theta=None, category=None):
+        self.x = x_intersect
+        self.y = y_intersect
+        if theta is not None:
+            self.theta = theta
+        if category is not None:
+            self.category = category
+
+
+class Line:
+    def __init__(self, start_point, end_point):
+        self.start = start_point
+        self.end = end_point
+        self.theta = math.atan2((start_point.y - end_point.y), (start_point.x - end_point.x))
+        self.length = math.hypot((start_point.x - end_point.x), (start_point.y - end_point.y))
+
+def is_in_range_of_a_circle(point1, point2, radius_threshold):
+    return math.hypot((point2.x -point1.x), (point2.y - point1.y)) < radius_threshold
+
 def categorize_rect(intersections):
+    list_of_squares = []
+    tmp_intersection = intersections
+    for starting_point in tmp_intersection:
+        for next_point in tmp_intersection:
+            if starting_point != next_point:
+                base_line = Line(starting_point, next_point)
+                possible_1 = Intersect(starting_point.x - math.sin(base_line.theta) * base_line.length, starting_point.y
+                                       + math.cos(base_line.theta) * base_line.length)
+                possible_1_c = Intersect(next_point.x - math.sin(base_line.theta) * base_line.length, next_point.y
+                                       + math.cos(base_line.theta) * base_line.length)
+                possible_2 = Intersect(starting_point.x + math.sin(base_line.theta) * base_line.length, starting_point.y
+                                       - math.cos(base_line.theta) * base_line.length)
+                possible_2_c = Intersect(next_point.x - math.sin(base_line.theta) * base_line.length, next_point.y
+                                       + math.cos(base_line.theta) * base_line.length)
+                midPoint = mid_point(starting_point, next_point)
+                possible_3 = Intersect(midPoint.x - math.sin(base_line.theta) * base_line.length / 2, midPoint.y +
+                                       math.cos(base_line.theta) * base_line.length / 2)
+                possible_3_c = Intersect(midPoint.x + math.sin(base_line.theta) * base_line.length, midPoint.y
+                                       - math.cos(base_line.theta) * base_line.length)
+                for third_point in tmp_intersection:
+                    if is_in_range_of_a_circle(possible_1, third_point, 5):
+                        for forth_point in tmp_intersection:
+                            if is_in_range_of_a_circle(possible_1_c, forth_point, 5):
+                                list_of_squares.append(Rectangle(starting_point, next_point, third_point, forth_point))
+                    if is_in_range_of_a_circle(possible_2, third_point, 5):
+                        for forth_point in tmp_intersection:
+                            if is_in_range_of_a_circle(possible_2_c, forth_point, 5):
+                                list_of_squares.append(Rectangle(starting_point, next_point, third_point, forth_point))
+                    if is_in_range_of_a_circle(possible_3, third_point, 5):
+                        for forth_point in tmp_intersection:
+                            if is_in_range_of_a_circle(possible_3_c, forth_point, 5):
+                                list_of_squares.append(Rectangle(starting_point, next_point, third_point, forth_point))
+                return None
 
 
 def mid_point(point1, point2):
     return Intersect((point1.x + point2.x)/2, (point1.y + point2.y)/2)
 
-class Intersect:
-    def __init__(self, x_intersect, y_intersect, theta=None):
-        self.x = x_intersect
-        self.y = y_intersect
-        if theta is not None:
-            self.theta = theta
 
 class Rectangle:
-    def __init__(self, index, point1, point2, point3, point4 = None):
-        self.center = Intersect(0,0)
-        self.index = index
+    def __init__(self, point1, point2, point3, point4 = None, index=None,):
+        self.center = Intersect(0, 0)
+        if index is not None:
+            self.index = index
         self.point1 = point1
         self.point2 = point2
         self.point3 = point3
         if point4 is None:
             self.center = self.find_its_center_3(self)
         else:
+            self.p = [point1, point2, point3, point4]
             self.center = self.find_its_center_4(self)
 
     def find_its_center_3(self):
-        length1 = math.hypot(self.point1, self.point2)
-        length2 = math.hypot(self.point2, self.point3)
-        length3 = math.hypot(self.point1, self.point3)
+        length1 = math.hypot((self.point1.x - self.point2.x), (self.point1.y - self.point2.y))
+        length2 = math.hypot((self.point2.x - self.point3.x), (self.point2.y - self.point3.y))
+        length3 = math.hypot((self.point1.x - self.point3.x), (self.point1.y - self.point3.y))
         if length1 >= length2 and length1 >= length3:
-            center = mid_point(self.point1,self.point2)
+            center = mid_point(self.point1, self.point2)
         elif length2 >= length1 and length2 >= length3:
-            center = mid_point(self.point2,self.point3)
+            center = mid_point(self.point2, self.point3)
         else:
             center = mid_point(self.point1, self.point3)
         return center
 
-# TODO: add method for 4 points given
     def find_its_center_4(self):
-        center = Intersect(0,0)
-        return center
+        x = [p.x for p in self.p]
+        y = [p.y for p in self.p]
+        return Intersect(sum(x)/len(x), sum(y)/len(y))

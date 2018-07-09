@@ -85,7 +85,7 @@ for line_1 in ext_lines:
         if i < j:
             x_center, y_center, theta, found = iH.check_intersect(line_1[0], line_2[0])
             if found:
-                new_point = iH.Intersect(x_center, y_center, theta)
+                new_point = iH.Intersect(x_center, y_center, theta=theta)
                 # print("The coordinate is (" + str(new_point.x) + ", " + str(new_point.y) + ")")
 
                 # new_img = img.copy()
@@ -134,9 +134,9 @@ for point in intersections:
 cv2.imshow("Output", img)
 cv2.waitKey()
 
-# height, width, _ = img.shape
-# blank_image = np.zeros((height,width,3), np.uint8)
-# for point in intersections:
-#     cv2.circle(blank_image, (point.x, point.y), 5, (255, 255, 255), -1)
-# cv2.imshow("Only the dots", blank_image)
-# cv2.waitKey()
+height, width, _ = img.shape
+blank_image = np.zeros((height,width,3), np.uint8)
+for point in intersections:
+    cv2.circle(blank_image, (point.x, point.y), 5, (255, 255, 255), -1)
+cv2.imshow("Only the dots", blank_image)
+cv2.waitKey()
