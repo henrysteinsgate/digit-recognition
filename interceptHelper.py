@@ -32,7 +32,7 @@ def check_intersect(line_1, line_2):
 
     # Consider if the lines are horizontal or vertical to cause a non-resolvable slope for intersection
     if m1 == m2:
-        print("Same Slope")
+        # print("Same Slope")
         return None, None, None, False
     elif m1 == -float('Inf') and abs(m2) <= 0.1:
         if pt3[0] <= pt1[0] <= pt4[0] and min(pt1[1], pt2[1]) <= pt3[1] <= max(pt1[1], pt2[1]):
@@ -51,7 +51,7 @@ def check_intersect(line_1, line_2):
     x = Symbol('x')
     solution = solve((m1 - m2) * x + b1 - b2, x)
     if len(solution) != 1:
-        print("Identical Lines")
+        # print("Identical Lines")
         return None, None, None, False
 
     # Check if intersects fall in the range of two lines
@@ -66,13 +66,13 @@ def check_intersect(line_1, line_2):
         theta = int(math.degrees(theta2 - theta1))
 
         # Adjust the threshold angle below to check for perpendicular lines
-        if (100 > theta > 75) or (-100 < theta < -75):
+        if (100 > theta > 80) or (-100 < theta < -80):
             return x_intersect, y_intersect, theta, True
         else:
-            print("Lines are not nearly perpendicular")
+            # print("Lines are not nearly perpendicular")
             return None, None, theta, False
     else:
-        print("Intersection is not within the lines")
+        # print("Intersection is not within the lines")
         return None, None, None, False
 
 

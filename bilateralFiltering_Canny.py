@@ -116,9 +116,9 @@ for line_1 in ext_lines:
 
 intersections = iH.rm_nearby_intersect(intersections)
 
-# print("Line 3 is: " + str(ext_lines[3]))
-# print("Line 11 is: " + str(ext_lines[11]))
-# print("Intersection is" + str(iH.check_intersect(ext_lines[3][0], ext_lines[11][0])))
+print("First line is: " + str(ext_lines[1]))
+print("Second line is: " + str(ext_lines[5]))
+print("Intersection is" + str(iH.check_intersect(ext_lines[1][0], ext_lines[5][0])))
 
 print("Number of Intersections: " + str(len(intersections)))
 
@@ -146,4 +146,11 @@ for point in intersections:
 # cv2.waitKey()
 
 cv2.imshow("Output", img)
+cv2.waitKey()
+
+height, width, _ = img.shape
+blank_image = np.zeros((height,width,3), np.uint8)
+for point in intersections:
+    cv2.circle(blank_image, (point.x, point.y), 5, (255, 255, 255), -1)
+cv2.imshow("Only the dots", blank_image)
 cv2.waitKey()
