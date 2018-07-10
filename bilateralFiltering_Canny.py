@@ -49,7 +49,7 @@ cv2.imshow("edges", edges)
 
 # threshold=30, minLineLength=20, maxLineGap=60
 
-lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=32, minLineLength=20, maxLineGap=60)
+lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=32, minLineLength=30, maxLineGap=40)
 line_cnt = 0
 for line in lines:
     for x1, y1, x2, y2 in line:
@@ -72,9 +72,15 @@ for line in lines.copy():
     cv2.line(img, (new_line[0][0], new_line[0][1]), (new_line[0][2], new_line[0][3]), (0, 0, 255), 1)
 
 print("There are " + str(len(ext_lines)) + " lines detected in the frame")
+height, width, _ = img.shape
+blank_image = np.zeros((height,width,3), np.uint8)
+
+for new_line in ext_lines:
+    cv2.line(blank_image, (new_line[0][0], new_line[0][1]), (new_line[0][2], new_line[0][3]), (0, 0, 255), 1)
+    cv2.imshow("Hough Transform Result", blank_image)
+    # cv2.waitKey()
 
 intersections = []
-
 
 # i, j prevent from checking two same lines' intersection
 i = 0

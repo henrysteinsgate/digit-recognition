@@ -82,7 +82,7 @@ def extend_line(line):
     length = int(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2))
     # TODO: Adjust the following threshold to pass the lines
     one_block_len = 90
-    ratio = float(3 * (one_block_len - length)/length)
+    ratio = float(2.5 * (one_block_len - length)/length)
     if one_block_len <= length <= 1.5 * one_block_len:
         # print("One Block")
         return line
@@ -107,29 +107,7 @@ def extend_line(line):
     # print("Ratio is: " + str(ratio))
     # print("Extended Length is: " + str(Extended_Length))
     return [extended]
-
-
-# def rm_nearby_lines(lines):
-#     for line_1 in lines:
-#         # Endpoints of the first line
-#         pt1 = (line_1[0], line_1[1])
-#         pt2 = (line_1[2], line_1[3])
-#
-#         # Calculate slope and y-intersect of each line
-#         m1 = (pt2[1] - pt1[1]) / (pt2[0] - pt1[0])
-#         b1 = pt1[1] - pt1[0] * m1
-#
-#         for line_2 in lines:
-#             # Endpoints of the second line
-#             pt3 = (line_2[0], line_2[1])
-#             pt4 = (line_2[2], line_2[3])
-#
-#             m2 = (pt4[1] - pt3[1]) / (pt4[0] - pt3[0])
-#             b2 = pt3[1] - pt3[0] * m2
-#
-#             if abs(m1 - m2) < 0:
-#                 return None
-
+    # return line
 
 # def increase_contrast(img):
 #     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
@@ -185,36 +163,11 @@ def rm_nearby_intersect(intersections):
 def rm_duplicates(rects, intersects):
     centers = []
     # centers.append([rects[0].center.x, rects[0].center.y])
-    # for rect in rects:
-    #     for center in centers:
-    #         if rect.center.x != center[0] and rect.center.y != center[1]:
-    #             new_center = [rect.center.x, rect.center.y]
-    #             centers.append(new_center)
+    for rect in rects:
+        rect_center = [rect.center.x, rect.center.y]
+        if rect_center not in centers:
+            centers.append(rect_center)
     return centers
-    # if len(rects) != 0 and len(intersects) != 0:
-    #     i = 0
-    #     for rect in rects:
-    #         j = 0
-    #         x1 = rect.center.x
-    #         y1 = rect.center.y
-    #         for rect_2 in rects:
-    #             x2 = rect_2.center.x
-    #             y2 = rect_2.center.y
-    #             # if i < j:
-    #             #     if abs(x1 - x2) <= 10 and abs(y1 - y2) <= 10:
-    #             #         rects.remove(rect_2)
-    #             if abs(x1 - x2) <= 10 and abs(y1 - y2) <= 10:
-    #                 rects.remove(rect_2)
-    #             j = j + 1
-    #         # k = 0
-    #         # for intersect in intersects:
-    #         #     x2 = intersect.x
-    #         #     y2 = intersect.y
-    #         #     if i < k:
-    #         #         if abs(x1 - x2) <= 15 and abs(y1 - y2) <= 15:
-    #         #             rects.remove(rects[k])
-    #         #         k = k + 1
-    #         i = i + 1
 
 
 def rm_shadow(image):
