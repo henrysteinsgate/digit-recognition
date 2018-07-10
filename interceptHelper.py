@@ -82,7 +82,7 @@ def extend_line(line):
     length = int(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2))
     # TODO: Adjust the following threshold to pass the lines
     one_block_len = 90
-    ratio = float(2.5 * (one_block_len - length)/length)
+    ratio = float(2.5 * (one_block_len - length) / length)
     if one_block_len <= length <= 1.5 * one_block_len:
         # print("One Block")
         return line
@@ -90,7 +90,7 @@ def extend_line(line):
         # print("Two Blocks")
         ratio = float((2 * one_block_len - length) / length)
 
-    # TODO: Extends lines based on its length, might need change ratio
+        # TODO: Extends lines based on its length, might need change ratio
         # ratio = 0.6
     delta_x = int(abs(x2 - x1) * ratio)
     delta_y = int(abs(y2 - y1) * ratio)
@@ -108,6 +108,7 @@ def extend_line(line):
     # print("Extended Length is: " + str(Extended_Length))
     return [extended]
     # return line
+
 
 # def increase_contrast(img):
 #     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
@@ -171,7 +172,6 @@ def rm_duplicates(rects, intersects):
 
 
 def rm_shadow(image):
-
     h, w = image.shape[0], image.shape[1]
 
     for y in range(h):
@@ -208,7 +208,7 @@ class Line:
 def is_in_range_of_a_circle(point1, point2, radius_threshold=None):
     if radius_threshold is None:
         radius_threshold = 15
-    return math.hypot((point2.x -point1.x), (point2.y - point1.y)) < radius_threshold
+    return math.hypot((point2.x - point1.x), (point2.y - point1.y)) < radius_threshold
 
 
 def categorize_rect(intersections):
@@ -222,16 +222,16 @@ def categorize_rect(intersections):
                 possible_1 = Intersect(starting_point.x - math.sin(base_line.theta) * base_line.length, starting_point.y
                                        + math.cos(base_line.theta) * base_line.length)
                 possible_1_c = Intersect(next_point.x - math.sin(base_line.theta) * base_line.length, next_point.y
-                                       + math.cos(base_line.theta) * base_line.length)
+                                         + math.cos(base_line.theta) * base_line.length)
                 possible_2 = Intersect(starting_point.x + math.sin(base_line.theta) * base_line.length, starting_point.y
                                        - math.cos(base_line.theta) * base_line.length)
                 possible_2_c = Intersect(next_point.x + math.sin(base_line.theta) * base_line.length, next_point.y
-                                       - math.cos(base_line.theta) * base_line.length)
+                                         - math.cos(base_line.theta) * base_line.length)
                 midPoint = mid_point(starting_point, next_point)
                 possible_3 = Intersect(midPoint.x - math.sin(base_line.theta) * base_line.length / 2, midPoint.y +
                                        math.cos(base_line.theta) * base_line.length / 2)
                 possible_3_c = Intersect(midPoint.x + math.sin(base_line.theta) * base_line.length, midPoint.y
-                                       - math.cos(base_line.theta) * base_line.length)
+                                         - math.cos(base_line.theta) * base_line.length)
                 for third_point in tmp_intersection:
                     if is_in_range_of_a_circle(possible_1, third_point):
                         for forth_point in tmp_intersection:
@@ -251,11 +251,11 @@ def categorize_rect(intersections):
 
 
 def mid_point(point1, point2):
-    return Intersect((point1.x + point2.x)/2, (point1.y + point2.y)/2)
+    return Intersect((point1.x + point2.x) / 2, (point1.y + point2.y) / 2)
 
 
 class Rectangle:
-    def __init__(self, point1, point2, point3, point4=None, index=None,):
+    def __init__(self, point1, point2, point3, point4=None, index=None, ):
         self.center = Intersect(0, 0)
         if index is not None:
             self.index = index
@@ -283,4 +283,45 @@ class Rectangle:
     def find_its_center_4(self):
         x = [p.x for p in self.p]
         y = [p.y for p in self.p]
-        return Intersect(sum(x)/len(x), sum(y)/len(y))
+        return Intersect(sum(x) / len(x), sum(y) / len(y))
+
+
+def square_img_to_centers_list(img):
+    img_shadowless = rm_shadow(img)
+    kernel = np.ones((5, 5), np.uint8)
+    img_erosion = cv2.erode(img_shadowless, kernel, iterations=1)
+    img_dilation = cv2.dilate(img_erosion, kernel, iterations=2)
+    img_blurred_bilateral = cv2.bilateralFilter(img_dilation, 20, 50, 50)
+    edges = cv2.Canny(img_blurred_bilateral, 200, 300)
+    cv2.imshow("edges", edges)
+    # lines = cv2.HoughLinesP(edges, 1, np.pi / 180, threshold=32, minLineLength=20, maxLineGap=60)
+    lines = cv2.HoughLinesP(edges, 1, np.pi / 180, threshold=32, minLineLength=30, maxLineGap=40)
+    ext_lines = []
+    for line in lines.copy():
+        new_line = extend_line(line)
+        ext_lines.append(new_line)
+    intersections = []
+    i = 0
+    for line_1 in ext_lines:
+        j = 0
+        for line_2 in ext_lines:
+            if i < j:
+                x_center, y_center, theta, found = check_intersect(line_1[0], line_2[0])
+                if found:
+                    new_point = Intersect(x_center, y_center, theta=theta)
+                    intersections.append(new_point)
+            j += 1
+        i += 1
+    intersections = rm_nearby_intersect(intersections)
+    found_rect = categorize_rect(intersections)
+    found_rect_centers = rm_duplicates(found_rect, intersections)
+
+    height, width, _ = img.shape
+    blank_image = np.zeros((height, width, 3), np.uint8)
+    for point in intersections:
+        cv2.circle(blank_image, (point.x, point.y), 5, (255, 255, 255), -1)
+    for center in found_rect_centers:
+        cv2.circle(blank_image, (int(center[0]), int(center[1])), 7, (0, 255, 255), -1)
+    cv2.imshow("Only the dots", blank_image)
+    cv2.waitKey()
+    return found_rect_centers
