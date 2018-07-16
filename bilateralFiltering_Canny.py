@@ -137,8 +137,8 @@ for point in intersections:
 # cv2.imshow("edges", edges)
 # cv2.waitKey()
 
-cv2.imshow("Output", img)
-cv2.waitKey()
+# cv2.imshow("Output", img)
+# cv2.waitKey()
 
 height, width, _ = img.shape
 blank_image = np.zeros((height,width,3), np.uint8)
@@ -159,4 +159,4 @@ for center in found_rect_centers:
 print("How many rects found? " + str(len(found_rect_centers)))
 
 cv2.imshow("Only the dots", blank_image)
-cv2.waitKey()
+# cv2.waitKey()
